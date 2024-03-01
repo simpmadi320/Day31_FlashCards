@@ -10,9 +10,14 @@ WORD_FONT = ("Arial", 60, "bold")
 current_card = {}
 
 # Gets records
-# Part 2
-data = pandas.read_csv("data/french_words.csv")
-word_dictionary = data.to_dict(orient="records")
+# Part
+try:
+    data = pandas.read_csv("data/words_to_learn.csv")
+except FileNotFoundError:
+    original_data = pandas.read_csv("data/french_words.csv")
+    word_dictionary = original_data.to_dict(orient="records")
+else:
+    word_dictionary = data.to_dict(orient="records")
 
 
 def next_card():
@@ -21,6 +26,7 @@ def next_card():
         window.after_cancel(flip_timer)
     except:
         pass
+
     flip_to_french()
     current_card = random.choice(word_dictionary)
     canvas.itemconfig(word_l, text=current_card["French"])
@@ -28,6 +34,9 @@ def next_card():
 
 
 def correct_answer():
+    word_dictionary.remove(current_card)
+    new_data = pandas.DataFrame(word_dictionary)
+    new_data.to_csv("data/words_to_learn.csv", index=False)
     next_card()
 
 
